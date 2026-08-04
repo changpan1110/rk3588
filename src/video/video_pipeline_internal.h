@@ -3,7 +3,6 @@
 
 #include "video/video_pipeline.h"
 
-#include <netinet/in.h>
 #include <pthread.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -19,9 +18,10 @@
 #include "input/input_usb.h"
 #include "output/output_encode_common.h"
 #include "output/output_osd_rkrga.h"
+#include "output/output_stream_rtsp.h"
+#include "output/output_stream_udp.h"
 
 #define VP_QUEUE_SIZE 8
-#define VP_RTP_MTU 1400
 #define VP_DEFAULT_DIR "/tmp"
 #define VP_DEFAULT_RTSP_URL "rtsp://127.0.0.1:8554/live"
 #define VP_STREAM_DEFAULT_BITRATE 4000000
@@ -109,14 +109,8 @@ struct vp_ctx {
     AVPacket *stream_pkt;
     int64_t stream_epoch_us;
 
-    AVFormatContext *rtsp_fmt;
-    AVStream *rtsp_stream;
-    int rtsp_header_written;
-
-    int udp_fd;
-    struct sockaddr_in udp_addr;
-    uint16_t rtp_seq;
-    uint32_t rtp_ssrc;
+    output_stream_rtsp_ctx_t rtsp_output;
+    output_stream_udp_ctx_t udp_output;
 };
 
 void vp_queue_push_locked(vp_frame_queue_t *q, const AVFrame *frame);
@@ -154,11 +148,6 @@ app_status_t vp_osd_render_source_label(const char *text,
                                         int font_size,
                                         AVFrame *rgba_frame);
 
-int vp_udp_open(vp_ctx_t *p, const char *ip, int port);
-void vp_rtp_send_packet(vp_ctx_t *p, const uint8_t *data, int size, int64_t pts_us);
-app_status_t vp_rtsp_open(vp_ctx_t *p, const char *url);
-app_status_t vp_rtsp_write_packet(vp_ctx_t *p, AVPacket *pkt);
-void vp_rtsp_close(vp_ctx_t *p);
 void *vp_stream_thread(void *opaque);
 
 int vp_mkdir_p(const char *dir);

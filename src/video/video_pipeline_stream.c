@@ -58,12 +58,12 @@ static app_status_t vp_stream_prepare_output(vp_ctx_t *p,
         }
     }
     if (p->cfg.stream_output.transport == VP_STREAM_OUTPUT_RTSP &&
-        p->rtsp_fmt == NULL) {
+        !output_stream_rtsp_is_open(&p->rtsp_output)) {
         const char *url = p->cfg.stream_output.rtsp_url[0] != '\0'
                               ? p->cfg.stream_output.rtsp_url
                               : VP_DEFAULT_RTSP_URL;
 
-        status = vp_rtsp_open(p, url);
+        status = output_stream_rtsp_init(&p->rtsp_output, url, p->stream_enc);
         if (status != APP_OK) {
             return status;
         }
@@ -254,14 +254,18 @@ void *vp_stream_thread(void *opaque) {
             app_status_t write_status = APP_OK;
 
             if (p->cfg.stream_output.transport == VP_STREAM_OUTPUT_RTSP) {
-                write_status = vp_rtsp_write_packet(p, p->stream_pkt);
+                write_status = output_stream_rtsp_send(&p->rtsp_output,
+                                                       p->stream_pkt);
             } else {
-                vp_rtp_send_packet(p, p->stream_pkt->data, p->stream_pkt->size, p->stream_pkt->pts);
+                write_status = output_stream_udp_send(&p->udp_output,
+                                                      p->stream_pkt->data,
+                                                      (size_t)p->stream_pkt->size,
+                                                      p->stream_pkt->pts);
             }
             if (write_status != APP_OK) {
                 av_packet_unref(p->stream_pkt);
-                LOGW("RTSP connection lost; stream encoding paused, use 'stream on' to reconnect");
-                vp_rtsp_close(p);
+                LOGW("stream output failed; encoding paused, use 'stream on' to reconnect");
+                output_stream_rtsp_deinit(&p->rtsp_output);
                 vp_stream_set_enabled(p, 0);
                 break;
             }
@@ -365,14 +369,25 @@ app_status_t vp_stream_set_enabled(vp_ctx_t *p, int enabled) {
 
     if (new_enabled &&
         p->cfg.stream_output.transport == VP_STREAM_OUTPUT_RTSP &&
-        p->rtsp_fmt == NULL &&
+        !output_stream_rtsp_is_open(&p->rtsp_output) &&
         p->stream_enc != NULL) {
         url = p->cfg.stream_output.rtsp_url[0] != '\0'
                   ? p->cfg.stream_output.rtsp_url
                   : VP_DEFAULT_RTSP_URL;
-        status = vp_rtsp_open(p, url);
+        status = output_stream_rtsp_init(&p->rtsp_output, url, p->stream_enc);
         if (status != APP_OK) {
             LOGE("stream enable failed: RTSP reconnect failed");
+            return status;
+        }
+    }
+    if (new_enabled &&
+        p->cfg.stream_output.transport == VP_STREAM_OUTPUT_RTP &&
+        !output_stream_udp_is_open(&p->udp_output)) {
+        status = output_stream_udp_init(&p->udp_output,
+                                        p->cfg.stream_output.rtp_dest_ip,
+                                        p->cfg.stream_output.rtp_dest_port);
+        if (status != APP_OK) {
+            LOGE("stream enable failed: RTP/UDP output open failed");
             return status;
         }
     }

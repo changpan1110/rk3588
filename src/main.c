@@ -62,7 +62,6 @@ static video_app_config_t build_video_app_config(void) {
         }
     };
 
-    video_output_prepare_default(&cfg.output);
     return cfg;
 }
 

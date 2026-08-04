@@ -29,7 +29,8 @@
 | `src/video/video_pipeline_encode.c` | H.264 编码器公共打开逻辑：优先 `h264_rkmpp`，回退 `h264_v4l2m2m` |
 | `src/video/video_pipeline_record.c` | MP4 录像：开始、停止、全部通道同步录像、录像线程、写 trailer |
 | `src/video/video_pipeline_osd.c` | 推流画面 OSD：十字准星开关、位置更新和绘制 |
-| `src/video/video_pipeline_rtp.c` | UDP socket、RTP header、H264 NAL / FU-A 分片发送 |
+| `src/output/output_stream_udp.c` | UDP socket、RTP header、H264 NAL / FU-A 分片发送 |
+| `src/output/output_stream_rtsp.c` | FFmpeg RTSP 发布、时间戳换算和连接收尾 |
 | `src/video/video_pipeline_stream.c` | 推流线程、编码、OSD 叠加、切源、强制 IDR |
 | `src/video/video_pipeline_util.c` | 存储目录创建、自动文件名生成 |
 
@@ -67,14 +68,14 @@ flowchart LR
 - `src/video/video_pipeline_osd.c`
 - `src/video/video_pipeline_queue.c`
 - `src/video/video_pipeline_record.c`
-- `src/video/video_pipeline_rtp.c`
-- `src/video/video_pipeline_rtsp.c`
+- `src/output/output_stream_udp.c`
+- `src/output/output_stream_rtsp.c`
 - `src/video/video_pipeline_stream.c`
 - `src/video/video_pipeline_util.c`
 
 ## 6. 后续扩展建议
 
-- 如果后续要加 RTSP / RTMP / WebRTC，可优先从 `video_pipeline_rtp.c` 拆出通用推流接口。
+- 如果后续要加 RTMP / WebRTC，应继续放在 `src/output`，由 `video_pipeline_stream.c` 只负责选择和调用输出接口。
 - 如果 OSD 要支持文字、测距数值、图标，建议继续扩展 `video_pipeline_osd.c`，不要放回主入口文件。
 - 如果其它可执行程序也要直接使用 `video_pipeline`，需要把同一组 `src/video/video_pipeline_*.c` 加到对应 target。
 
@@ -109,8 +110,8 @@ snap hdmi /tmp/hdmi.jpg
 
 现在推流输出支持两种模式：
 
-- `VP_STREAM_OUTPUT_RTP`：原来的裸 RTP/UDP，仍然走 `video_pipeline_rtp.c`。
-- `VP_STREAM_OUTPUT_RTSP`：新增 RTSP 发布模式，走 `video_pipeline_rtsp.c`，把已经编码好的 H264 packet 推给 MediaMTX。
+- `VP_STREAM_OUTPUT_RTP`：裸 RTP/UDP，走 `src/output/output_stream_udp.c`。
+- `VP_STREAM_OUTPUT_RTSP`：RTSP 发布，走 `src/output/output_stream_rtsp.c`，把已经编码好的 H264 packet 推给 MediaMTX。
 
 RTSP 模式只替换推流输出部分，采集、RGA 缩放、OSD、H264 编码线程都保持原来的流程。
 

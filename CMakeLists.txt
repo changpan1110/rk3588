@@ -163,21 +163,23 @@ set(RK_OUTPUT_CONVERT_SOURCES
     src/output/output_encode_rkrga_filter.c
     src/output/output_osd_rkrga.c
 )
+set(RK_OUTPUT_STREAM_SOURCES
+    src/output/output_stream_rtsp.c
+    src/output/output_stream_udp.c
+)
 list(REMOVE_ITEM RK_VIDEO_PIPELINE_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/video/video_pipeline_main.c"
 )
 
-file(GLOB RK3588_VIDEO_APP_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/common/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/input/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/process/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/output/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/*.c"
-)
-list(REMOVE_ITEM RK3588_VIDEO_APP_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/app/sbus_rc8_command.c"
+set(RK3588_VIDEO_APP_SOURCES
+    src/main.c
+    src/app/app_manager.c
+    ${RK_COMMON_SOURCES}
+    ${RK_INPUT_SOURCES}
+    src/process/process_common.c
+    src/output/output_display_gui.c
+    src/output/output_encode_common.c
+    src/output/output_encode_rkrga_filter.c
 )
 list(SORT RK_COMMON_SOURCES)
 list(SORT RK_INPUT_SOURCES)
@@ -247,6 +249,7 @@ add_executable(rk3588_video_pipeline_main
     ${RK_COMMON_SOURCES}
     ${RK_INPUT_SOURCES}
     ${RK_OUTPUT_CONVERT_SOURCES}
+    ${RK_OUTPUT_STREAM_SOURCES}
     src/output/output_recorder.c
     ${RK_VIDEO_PIPELINE_SOURCES}
 )

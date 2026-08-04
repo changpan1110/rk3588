@@ -74,7 +74,7 @@ app_status_t vp_init(vp_ctx_t **out_ctx, const vp_config_t *cfg) {
         free(p);
         return APP_ERR_NOMEM;
     }
-    p->udp_fd = -1;
+    p->udp_output.socket_fd = -1;
     p->stream_enabled = 1;
     p->stream_ch = VP_CHANNEL_INVALID;
 
@@ -282,13 +282,15 @@ app_status_t vp_init(vp_ctx_t **out_ctx, const vp_config_t *cfg) {
     if (stream_output == VP_STREAM_OUTPUT_RTP &&
         cfg->stream_output.rtp_dest_port > 0 &&
         cfg->stream_output.rtp_dest_ip[0] != '\0') {
-        if (vp_udp_open(p,
-                        cfg->stream_output.rtp_dest_ip,
-                        cfg->stream_output.rtp_dest_port) != 0) {
+        if (output_stream_udp_init(&p->udp_output,
+                                   cfg->stream_output.rtp_dest_ip,
+                                   cfg->stream_output.rtp_dest_port) != APP_OK) {
             LOGW("udp open failed, streaming disabled");
+            p->stream_enabled = 0;
         }
     } else if (stream_output == VP_STREAM_OUTPUT_RTP) {
         LOGW("stream dest not configured, streaming disabled");
+        p->stream_enabled = 0;
     } else {
         LOGI("RTSP publish will open after the first hardware OSD frame");
     }
@@ -427,7 +429,7 @@ void vp_deinit(vp_ctx_t *p) {
         pthread_join(p->stream_thread, NULL);
         p->stream_thread = 0;
     }
-    vp_rtsp_close(p);
+    output_stream_rtsp_deinit(&p->rtsp_output);
     if (p->stream_enc != NULL) {
         avcodec_free_context(&p->stream_enc);
     }
@@ -458,9 +460,7 @@ void vp_deinit(vp_ctx_t *p) {
         pthread_cond_destroy(&ch->rec_cond);
     }
 
-    if (p->udp_fd >= 0) {
-        close(p->udp_fd);
-    }
+    output_stream_udp_deinit(&p->udp_output);
     pthread_cond_destroy(&p->stream_cond);
     pthread_mutex_destroy(&p->lock);
     pthread_mutex_destroy(&p->osd_lock);
