@@ -1,0 +1,38 @@
+# Local credentials
+codex_rk3588_key*
+*.pem
+*.key
+
+# CMake and compiler output
+build/
+build_*/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.exe
+
+# Runtime and generated diagnostics
+*.log
+*.mp4
+*.ts
+*.jpg
+*.jpeg
+*.png
+core
+core.*
+
+# Editor and OS metadata
+.vscode/
+.idea/
+.vs/
+.DS_Store
+Thumbs.db
+*~
