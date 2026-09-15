@@ -2,6 +2,35 @@
 
 RK3588 机载视频管线项目（C + 部分 Python）：多路视频采集（CSI/HDMI/USB）、硬件编解码（Rockchip MPP + FFmpeg）、RGA/OSD 叠加、RTSP/RTP/SRT/UDP 推流、MP4 录像，以及 CAN/串口/SBUS/MAVLink 等外设控制。
 
+## 依赖仓库
+
+本项目编译依赖 Rockchip FFmpeg/MPP/RGA 及 MAVLink C 库，请先下载依赖仓库：
+
+**https://github.com/changpan1110/ffmpeg**
+
+```bash
+# 在板子上 clone 到 /home/cat/ffmpeg（与本项目硬编码路径一致）
+cd /home/cat
+git clone https://github.com/changpan1110/ffmpeg.git ffmpeg
+
+# 编译并安装依赖（FFmpeg + MPP + RGA）
+cd ffmpeg
+./install_rk3588_ffmpeg.sh deps      # 装系统依赖（需 sudo）
+./install_rk3588_ffmpeg.sh mpp       # 编译安装 MPP
+./install_rk3588_ffmpeg.sh rga       # 检查/安装 RGA
+./install_rk3588_ffmpeg.sh ffmpeg    # 编译安装 FFmpeg
+./install_rk3588_ffmpeg.sh check     # 检查版本与功能
+# 或直接: ./install_rk3588_ffmpeg.sh all
+
+# MAVLink C 头文件库（c_library_v2）在该仓库中已附带；
+# 如需重新生成：./install_mavlink.sh
+```
+
+安装完成后将得到：
+
+- `~/ffmpeg/install/` — FFmpeg / MPP / RGA 安装前缀（本项目 `RK_MEDIA_PREFIX` 指向这里）
+- `~/ffmpeg/c_library_v2/` — MAVLink C 头文件库（本项目 `MAVLINK_C_ROOT` 指向这里）
+
 ## 硬件与系统环境
 
 - 平台：RK3588（aarch64），Debian 12
@@ -46,9 +75,9 @@ cmake --build build -j$(nproc)
 # 产物: build/rk3588_video_pipeline_main
 ```
 
-> 依赖（FFmpeg/MPP/RGA/MAVLink）的安装脚本在本仓库同级的
-> `ffmpeg` 目录（`install_rk3588_ffmpeg.sh`，详见 `docs`），MAVLink 用
-> `install_mavlink.sh`；新板子可用 `deploy_rk3588_env.sh` 一键部署。
+> 依赖（FFmpeg/MPP/RGA/MAVLink）的下载与安装见上方「依赖仓库」章节；
+> 本仓库同级的 `ffmpeg` 目录即依赖仓库（`install_rk3588_ffmpeg.sh`），
+> 新板子可用 `deploy_rk3588_env.sh` 一键部署。
 
 ## 脚本使用详解
 
