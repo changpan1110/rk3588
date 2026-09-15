@@ -19,7 +19,14 @@ compile_commands.json
 *.so.*
 *.exe
 
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
 # Runtime and generated diagnostics
+.run/
 *.log
 *.mp4
 *.ts

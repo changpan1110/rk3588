@@ -1,4 +1,4 @@
-#define LOG_LOCAL_LEVEL LOG_LEVEL_DEBUG
+#define LOG_LOCAL_LEVEL LOG_LEVEL_TRACE
 #define LOG_FILE_NAME "app_manager.c"
 
 #include "app/app_manager.h"
@@ -22,10 +22,10 @@ static app_status_t video_app_open_inputs(video_app_ctx_t *ctx) {
             status = input_usb_open(&ctx->usb, &ctx->config.input.usb);
             break;
         case VIDEO_SOURCE_CSI0:
-            status = input_csi0_open(&ctx->csi0, &ctx->config.input.csi0);
+            status = input_csi_open(&ctx->csi0, &ctx->config.input.csi0);
             break;
         case VIDEO_SOURCE_CSI1:
-            status = input_csi1_open(&ctx->csi1, &ctx->config.input.csi1);
+            status = input_csi_open(&ctx->csi1, &ctx->config.input.csi1);
             break;
         case VIDEO_SOURCE_HDMI_IN:
             status = input_hdmi_in_open(&ctx->hdmi_in, &ctx->config.input.hdmi_in);
@@ -49,12 +49,12 @@ static app_status_t video_app_read_frame(video_app_ctx_t *ctx, video_frame_t *fr
             break;
         case VIDEO_SOURCE_CSI0:
             if (ctx->csi0.is_opened) {
-                return input_csi0_read(&ctx->csi0, frame);
+                return input_csi_read(&ctx->csi0, frame);
             }
             break;
         case VIDEO_SOURCE_CSI1:
             if (ctx->csi1.is_opened) {
-                return input_csi1_read(&ctx->csi1, frame);
+                return input_csi_read(&ctx->csi1, frame);
             }
             break;
         case VIDEO_SOURCE_HDMI_IN:
@@ -87,7 +87,7 @@ app_status_t video_app_init(video_app_ctx_t *ctx, const video_app_config_t *cfg)
         return status;
     }
 
-    status = output_display_gui_init(&ctx->gui_display, 1, 1280, 720);
+    status = display_gui_init(&ctx->gui_display, 1, 1280, 720);
     if (status != APP_OK) {
         LOGW("gui display init failed: %s", app_status_str(status));
     }
@@ -126,15 +126,15 @@ app_status_t video_app_run_once(video_app_ctx_t *ctx) {
             }
         }
 
-        if (output_display_gui_poll_quit(&ctx->gui_display)) {
+        if (display_gui_poll_quit(&ctx->gui_display)) {
             ctx->gui_display.enabled = 0;
             ctx->running = 0;
         }
-        output_display_gui_show(&ctx->gui_display, &frame);
+        display_gui_show(&ctx->gui_display, &frame);
     } else if (status != APP_ERR_EOF) {
         LOGW("video_app_run_once read failed: %s", app_status_str(status));
     } else {
-        LOGD("video_app_run_once read retry: %s", app_status_str(status));
+        LOGT("video_app_run_once read retry: %s", app_status_str(status));
     }
 
     av_frame_free(&frame.av_frame);
@@ -171,9 +171,9 @@ void video_app_deinit(video_app_ctx_t *ctx) {
     }
 
     input_usb_close(&ctx->usb);
-    input_csi0_close(&ctx->csi0);
-    input_csi1_close(&ctx->csi1);
+    input_csi_close(&ctx->csi0);
+    input_csi_close(&ctx->csi1);
     input_hdmi_in_close(&ctx->hdmi_in);
-    output_display_gui_deinit(&ctx->gui_display);
+    display_gui_deinit(&ctx->gui_display);
     process_common_deinit(&ctx->process);
 }

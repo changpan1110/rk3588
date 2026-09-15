@@ -22,7 +22,8 @@ typedef enum {
     APP_ERR_IO = -4,
     APP_ERR_EOF = -5,
     APP_ERR_UNSUPPORTED = -6,
-    APP_ERR_BUSY = -7
+    APP_ERR_BUSY = -7,
+    APP_ERR_AGAIN = -8
 } app_status_t;
 
 typedef enum {
@@ -77,13 +78,6 @@ typedef struct {
     int width;
     int height;
 } encoded_packet_t;
-
-typedef struct {
-    char device[APP_PATH_MAX_LEN];
-    int baudrate;
-    int is_rs485;
-    int fd;
-} uart_config_t;
 
 const char *app_status_str(app_status_t status);
 const char *video_source_type_str(video_source_type_t source_type);

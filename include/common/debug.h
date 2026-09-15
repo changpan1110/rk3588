@@ -8,11 +8,12 @@ typedef enum {
     LOG_LEVEL_DEBUG = 1,
     LOG_LEVEL_INFO = 2,
     LOG_LEVEL_WARN = 3,
-    LOG_LEVEL_ERROR = 4
+    LOG_LEVEL_ERROR = 4,
+    LOG_LEVEL_OFF = 5
 } log_level_t;
 
 #ifndef LOG_LOCAL_LEVEL
-#define LOG_LOCAL_LEVEL LOG_LEVEL_INFO
+#define LOG_LOCAL_LEVEL LOG_LEVEL_DEBUG
 #endif
 
 #ifndef LOG_FILE_NAME
@@ -20,11 +21,15 @@ typedef enum {
 #endif
 
 void log_write(log_level_t level, const char *file, int line, const char *func, const char *fmt, ...);
+/* Defaults to DEBUG; RK3588_LOG_LEVEL can be TRACE, DEBUG, INFO, WARN, ERROR or OFF. */
+void log_set_level(log_level_t level);
+log_level_t log_get_level(void);
+int log_is_enabled(log_level_t level);
 
-#define LOGT(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_TRACE) log_write(LOG_LEVEL_TRACE, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
-#define LOGD(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_DEBUG) log_write(LOG_LEVEL_DEBUG, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
-#define LOGI(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_INFO)  log_write(LOG_LEVEL_INFO,  LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
-#define LOGW(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_WARN)  log_write(LOG_LEVEL_WARN,  LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
-#define LOGE(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_ERROR) log_write(LOG_LEVEL_ERROR, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
+#define LOGT(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_TRACE && log_is_enabled(LOG_LEVEL_TRACE)) log_write(LOG_LEVEL_TRACE, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
+#define LOGD(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_DEBUG && log_is_enabled(LOG_LEVEL_DEBUG)) log_write(LOG_LEVEL_DEBUG, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
+#define LOGI(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_INFO && log_is_enabled(LOG_LEVEL_INFO)) log_write(LOG_LEVEL_INFO, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
+#define LOGW(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_WARN && log_is_enabled(LOG_LEVEL_WARN)) log_write(LOG_LEVEL_WARN, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
+#define LOGE(fmt, ...) do { if (LOG_LOCAL_LEVEL <= LOG_LEVEL_ERROR && log_is_enabled(LOG_LEVEL_ERROR)) log_write(LOG_LEVEL_ERROR, LOG_FILE_NAME, __LINE__, __func__, fmt, ##__VA_ARGS__); } while (0)
 
 #endif

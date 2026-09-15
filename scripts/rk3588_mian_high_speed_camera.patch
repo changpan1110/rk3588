@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -264,8 +264,11 @@ target_include_directories(rk3588_sbus_test PRIVATE include)
+ 
+ add_executable(mian
+     src/tools/mian.c
++    src/tools/high_speed_camera_test.c
++    src/control/high_speed_camera/high_speed_camera.c
+     src/control/visca_camera/visca_camera.c
+     src/input/serial/uart_base.c
++    src/common/debug.c
+ )
+ target_include_directories(mian PRIVATE include)
+ 

@@ -1,12 +1,11 @@
 #ifndef APP_MANAGER_H
 #define APP_MANAGER_H
 
-#include "input/input_usb.h"
-#include "input/input_csi0.h"
-#include "input/input_csi1.h"
-#include "input/input_hdmi_in.h"
-#include "process/process_common.h"
-#include "output/output_display_gui.h"
+#include "input/video/input_usb.h"
+#include "input/video/input_csi.h"
+#include "input/video/input_hdmi_in.h"
+#include "process/video/process_common.h"
+#include "output/display/display_gui.h"
 
 typedef struct {
     video_input_config_t usb;
@@ -22,11 +21,11 @@ typedef struct {
 typedef struct {
     video_app_config_t config;
     input_usb_ctx_t usb;
-    input_csi0_ctx_t csi0;
-    input_csi1_ctx_t csi1;
+    input_csi_ctx_t csi0;
+    input_csi_ctx_t csi1;
     input_hdmi_in_ctx_t hdmi_in;
     process_common_ctx_t process;
-    output_display_gui_ctx_t gui_display;
+    display_gui_ctx_t gui_display;
     int running;
     int loop_delay_ms;
 } video_app_ctx_t;

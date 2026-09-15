@@ -1,7 +1,7 @@
 #include "common/common.h"
 
 #include <string.h>
-#include <sys/time.h>
+#include <time.h>
 
 const char *app_status_str(app_status_t status) {
     switch (status) {
@@ -13,6 +13,7 @@ const char *app_status_str(app_status_t status) {
         case APP_ERR_EOF: return "APP_ERR_EOF";
         case APP_ERR_UNSUPPORTED: return "APP_ERR_UNSUPPORTED";
         case APP_ERR_BUSY: return "APP_ERR_BUSY";
+        case APP_ERR_AGAIN: return "APP_ERR_AGAIN";
         default: return "APP_ERR_UNKNOWN";
     }
 }
@@ -28,7 +29,10 @@ const char *video_source_type_str(video_source_type_t source_type) {
 }
 
 int64_t app_get_time_us(void) {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return ((int64_t)tv.tv_sec * 1000000LL) + tv.tv_usec;
+    struct timespec ts;
+
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
+        return 0;
+    }
+    return (int64_t)ts.tv_sec * 1000000LL + ts.tv_nsec / 1000;
 }

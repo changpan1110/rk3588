@@ -1,0 +1,130 @@
+{
+  "storage_dir": "/home/cat/11223344/pipeline_rec",
+  "serial": {
+    "sbus_device": "/dev/ttyACM1",
+    "high_speed_camera_device": "/dev/ttyACM5",
+    "high_speed_camera_baudrate": 115200,
+    "thermal_camera_device": "/dev/ttyACM2",
+    "thermal_camera_baudrate": 115200,
+    "laser_device": "/dev/ttyACM5",
+    "laser_baudrate": 115200,
+    "visca_4k_camera_device": "/dev/ttyACM1",
+    "visca_4k_camera_baudrate": 9600,
+    "motor_device": "/dev/ttyS7",
+    "motor_baudrate": 115200,
+    "motor_slave_addr": 1,
+    "mavlink_config_path": "/home/cat/rk3588/config/mavlink_control.conf"
+  },
+  "channels": [
+    {
+      "input": {
+        "name": "usb1",
+        "device": "/dev/video21",
+        "input_format": "mjpeg",
+        "width": 1920,
+        "height": 1080,
+        "fps": 30,
+        "source_type": "usb",
+        "use_native_v4l2": false
+      },
+      "record_output": {
+        "width": 0,
+        "height": 0,
+        "fps": 30,
+        "bitrate": 8000000
+      },
+      "record_dir": null,
+      "snapshot_dir": null,
+      "osd_label": "USB1 摄像头",
+      "enabled": false
+    },
+    {
+      "input": {
+        "name": "usb2",
+        "device": "/dev/video23",
+        "input_format": "mjpeg",
+        "width": 1920,
+        "height": 1080,
+        "fps": 30,
+        "source_type": "usb",
+        "use_native_v4l2": false
+      },
+      "record_output": {
+        "width": 0,
+        "height": 0,
+        "fps": 30,
+        "bitrate": 8000000
+      },
+      "record_dir": null,
+      "snapshot_dir": null,
+      "osd_label": "USB2 摄像头",
+      "enabled": false
+    },
+    {
+      "input": {
+        "name": "usb3",
+        "device": "/dev/video5",
+        "input_format": "mjpeg",
+        "width": 3840,
+        "height": 2160,
+        "fps": 20,
+        "source_type": "usb",
+        "use_native_v4l2": false
+      },
+      "record_output": {
+        "width": 0,
+        "height": 0,
+        "fps": 30,
+        "bitrate": 8000000
+      },
+      "record_dir": null,
+      "snapshot_dir": null,
+      "osd_label": "4K",
+      "enabled": false
+    },
+    {
+      "input": {
+        "name": "hdmi",
+        "device": "/dev/video20",
+        "input_format": "",
+        "width": 0,
+        "height": 0,
+        "fps": 30,
+        "source_type": "hdmi_in",
+        "use_native_v4l2": true
+      },
+      "record_output": {
+        "width": 0,
+        "height": 0,
+        "fps": 30,
+        "bitrate": 16000000
+      },
+      "record_dir": null,
+      "snapshot_dir": null,
+      "osd_label": "HDMI 输入",
+      "enabled": false
+    },
+    {
+      "input": {
+        "name": "csi0",
+        "device": "/dev/video11",
+        "input_format": "nv12",
+        "width": 1920,
+        "height": 1080,
+        "fps": 120,
+        "source_type": "csi0",
+        "use_native_v4l2": true
+      },
+      "record_output": {
+        "width": 0,
+        "height": 0,
+        "fps": 30,
+        "bitrate": 16000000
+      },
+      "record_dir": null,
+      "snapshot_dir": null,
+      "osd_label": "CSI0 4K",
+      "enabled": true
+    }
+  ]
+}

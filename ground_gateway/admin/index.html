@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>RK3588 系统配置</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css?v=20260810-1">
+</head>
+<body>
+  <div class="admin-shell">
+    <header class="admin-topbar">
+      <a class="back-link" id="playerLink" href="#" title="返回播放器">← 播放器</a>
+      <div class="admin-title">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>系统配置</h1>
+          <p>RK3588 WebSocket Gateway</p>
+        </div>
+      </div>
+      <div class="admin-state" id="adminState" data-state="loading" role="status" aria-live="polite">
+        <span class="state-dot" aria-hidden="true"></span>
+        <span id="adminStateText">正在读取配置</span>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <form id="configForm" novalidate>
+        <section class="settings-section">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">VIDEO</p>
+              <h2>视频流</h2>
+            </div>
+            <span class="section-note">保存后播放器可直接刷新</span>
+          </div>
+          <div class="form-grid one-column">
+            <label class="field">
+              <span>MediaMTX 视频地址</span>
+              <input id="videoUrl" name="videoUrl" type="url" required spellcheck="false" placeholder="http://192.168.31.14:8889/live/">
+            </label>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">SERVICE</p>
+              <h2>服务端口</h2>
+            </div>
+            <span class="section-note">端口变化需要重启服务</span>
+          </div>
+          <div class="form-grid">
+            <label class="field">
+              <span>网页端口</span>
+              <input id="webPort" type="number" min="1" max="65535" required>
+            </label>
+            <label class="field">
+              <span>WebSocket 端口</span>
+              <input id="gatewayPort" type="number" min="1" max="65535" required>
+            </label>
+            <label class="switch-field">
+              <input id="gatewayDebug" type="checkbox">
+              <span class="switch-control" aria-hidden="true"></span>
+              <span><strong>详细控制日志</strong><small>记录按钮 JSON 和 ACK</small></span>
+            </label>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">MAVLINK</p>
+              <h2>空中端通信</h2>
+            </div>
+            <span class="section-note">切换协议需要重启服务</span>
+          </div>
+          <div class="form-grid one-column">
+            <label class="field">
+              <span>传输方式</span>
+              <select id="transport">
+                <option value="udp">UDP</option>
+                <option value="tcp">TCP</option>
+                <option value="serial">串口</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset class="transport-panel" data-transport-panel="udp">
+            <legend>UDP 参数</legend>
+            <div class="form-grid">
+              <label class="field">
+                <span>模式</span>
+                <select id="udpMode"><option value="out">发送到空中端</option><option value="in">接收监听</option></select>
+              </label>
+              <label class="field"><span>主机地址</span><input id="udpHost" spellcheck="false"></label>
+              <label class="field"><span>端口</span><input id="udpPort" type="number" min="1" max="65535"></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="transport-panel" data-transport-panel="tcp">
+            <legend>TCP 参数</legend>
+            <div class="form-grid">
+              <label class="field">
+                <span>模式</span>
+                <select id="tcpMode"><option value="client">客户端</option><option value="server">服务端</option></select>
+              </label>
+              <label class="field"><span>主机地址</span><input id="tcpHost" spellcheck="false"></label>
+              <label class="field"><span>端口</span><input id="tcpPort" type="number" min="1" max="65535"></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="transport-panel" data-transport-panel="serial">
+            <legend>串口参数</legend>
+            <div class="form-grid">
+              <label class="field"><span>设备</span><input id="serialDevice" spellcheck="false" placeholder="/dev/ttyUSB0"></label>
+              <label class="field"><span>波特率</span><input id="serialBaud" type="number" min="1200" max="4000000"></label>
+            </div>
+          </fieldset>
+        </section>
+
+        <div class="action-bar">
+          <div class="action-message" id="actionMessage" role="status" aria-live="polite"></div>
+          <div class="action-buttons">
+            <button class="button secondary" id="reloadConfigButton" type="button">↻ 重新读取</button>
+            <button class="button secondary" id="openPlayerButton" type="button">□ 打开播放器</button>
+            <button class="button primary" id="saveButton" type="submit">✓ 保存配置</button>
+            <button class="button primary" id="saveUpdateButton" type="button">✓ 保存并更新播放器</button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script src="/admin/assets/admin.js?v=20260810-1"></script>
+</body>
+</html>
