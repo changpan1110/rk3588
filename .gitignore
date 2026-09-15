@@ -33,6 +33,7 @@ venv/
 *.jpg
 *.jpeg
 *.png
+!docs/osd_mockups/*.png
 core
 core.*
 
