@@ -46,8 +46,8 @@ cmake --build build -j$(nproc)
 # 产物: build/rk3588_video_pipeline_main
 ```
 
-> 依赖（FFmpeg/MPP/RGA/MAVLink）的安装见仓库
-> [install_rk3588_ffmpeg.sh](https://github.com/changpan1110/ffmpeg) 与
+> 依赖（FFmpeg/MPP/RGA/MAVLink）的安装脚本在本仓库同级的
+> `ffmpeg` 目录（`install_rk3588_ffmpeg.sh`，详见 `docs`），MAVLink 用
 > `install_mavlink.sh`；新板子可用 `deploy_rk3588_env.sh` 一键部署。
 
 ## 运行管理
